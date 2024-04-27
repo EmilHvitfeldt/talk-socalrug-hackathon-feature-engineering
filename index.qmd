@@ -77,6 +77,8 @@ preprocessing vs feature engineering
 
 ## 
 
+![](assets/cat-theme/head-01.svg){.absolute bottom=0 right=0 width="150" height="150"}
+
 ::: {.columns}
 ::: {.column}
 
@@ -125,6 +127,10 @@ Encoding
 
 ## Long Beach Animal Shelter Data
 
+![](assets/cat-theme/head-02.svg){.absolute top=-50 right=300 width="150" height="150"}
+![](assets/cat-theme/head-03.svg){.absolute top=-50 right=150 width="150" height="150"}
+![](assets/cat-theme/head-04.svg){.absolute top=-50 right=0 width="150" height="150"}
+
 ```{r}
 library(tidyverse)
 library(janitor)
@@ -144,6 +150,8 @@ adoptions |>
 :::
 
 ## Date Time
+
+![](assets/cat-theme/head-06.svg){.absolute top=0 right=0 width="150" height="150"}
 
 How can we deal with this variable?
 
@@ -229,6 +237,9 @@ recipe(~ intake_date, data = adoptions) |>
 
 ## Multiple Categorical variables
 
+![](assets/cat-theme/head-07.svg){.absolute top=-50 right=300 width="150" height="150"}
+![](assets/cat-theme/head-08.svg){.absolute top=-50 right=150 width="150" height="150"}
+
 How can we deal with these variables?
 
 ```{r}
@@ -239,6 +250,9 @@ adoptions |>
 ```
 
 ## Multiple Categorical variables
+
+![](assets/cat-theme/head-07.svg){.absolute top=-50 right=300 width="150" height="150"}
+![](assets/cat-theme/head-08.svg){.absolute top=-50 right=150 width="150" height="150"}
 
 How can we deal with these variables? Create dummies
 
@@ -255,6 +269,9 @@ adoptions |>
 ```
 
 ## Multiple Categorical variables
+
+![](assets/cat-theme/head-07.svg){.absolute top=-50 right=300 width="150" height="150"}
+![](assets/cat-theme/head-08.svg){.absolute top=-50 right=150 width="150" height="150"}
 
 How can we deal with these variables? othering of low counts
 
@@ -273,6 +290,9 @@ adoptions |>
 
 ## Multiple Categorical variables
 
+![](assets/cat-theme/head-07.svg){.absolute top=-50 right=300 width="150" height="150"}
+![](assets/cat-theme/head-08.svg){.absolute top=-50 right=150 width="150" height="150"}
+
 How can we deal with these variables? combined dummies
 
 ```{r}
@@ -289,6 +309,10 @@ adoptions |>
 ```
 
 ## What will we go over?
+
+![](assets/cat-theme/head-10.svg){.absolute top=-50 right=150 width="150" height="150"}
+![](assets/cat-theme/head-11.svg){.absolute top=300 right=700 width="150" height="150"}
+![](assets/cat-theme/head-12.svg){.absolute bottom=0 right=0 width="150" height="150"}
 
 ::: {.columns}
 ::: {.column}
@@ -341,6 +365,11 @@ Distributional problems, scaling, outliers, non-linear effects ![](assets/cat-th
 
 ## Distributional problems
 
+![](assets/cat-theme/head-14.svg){.absolute top=400 left=300 width="150" height="150"}
+![](assets/cat-theme/head-15.svg){.absolute top=400 left=50 width="150" height="150"}
+![](assets/cat-theme/head-16.svg){.absolute top=200 left=300 width="150" height="150"}
+![](assets/cat-theme/head-17.svg){.absolute top=200 left=50 width="150" height="150"}
+
 ::: {.spacer style="height:70%; text-align: right;"}
 
 Think about how models are working
@@ -388,6 +417,9 @@ ames |>
 ```
 
 ## Methods to alter distributions
+
+![](assets/cat-theme/head-18.svg){.absolute bottom=150 left=300 width="150" height="150"}
+![](assets/cat-theme/head-19.svg){.absolute bottom=-50 right=150 width="150" height="150"}
 
 ::: columns
 ::: {.column width="50%"}
@@ -500,6 +532,8 @@ two_groups |>
 
 ## Scaling Methods
 
+![](assets/cat-theme/turso-01.svg){.absolute top=150 right=100 width="300" height="300"}
+
 All scaling methods are **trained** on our data
 
 <br>
@@ -525,6 +559,9 @@ either to change [magnitude]{.brown-text} of data, or its [range]{.purple-text}
 
 ## Dealing with outliers
 
+![](assets/cat-theme/head-20.svg){.absolute top=50 right=300 width="150" height="150"}
+![](assets/cat-theme/head-21.svg){.absolute bottom=50 right=150 width="150" height="150"}
+
 <br>
 
 What are outliers?
@@ -542,6 +579,9 @@ from the rest of the values
 
 ## Dealing with outliers
 
+![](assets/cat-theme/head-22.svg){.absolute top=50 right=150 width="150" height="150"}
+![](assets/cat-theme/head-23.svg){.absolute bottom=50 right=300 width="150" height="150"}
+
 <br>
 
 1. [Identify them]{.pink-text}
@@ -553,6 +593,9 @@ from the rest of the values
     c. indication
 
 ## Non-linear effects
+
+![](assets/cat-theme/head-24.svg){.absolute top=50% right=300 width="150" height="150"}
+
 
 ::: {.spacer style="height:70%;"}
 
@@ -680,6 +723,9 @@ and there are lots of methods to turn them into numeric ![](assets/cat-theme/pro
 :::
 
 ## Character vs Factor variables
+
+![](assets/cat-theme/head-30.svg){.absolute top=50 right=300 width="150" height="150"}
+![](assets/cat-theme/head-31.svg){.absolute bottom=50 left=150 width="150" height="150"}
 
 <br>
 
@@ -851,6 +897,9 @@ long_pet_names |>
 
 ## Messy Characters
 
+![](assets/cat-theme/turso-02.svg){.absolute top=50 right=300 width="450" height="450"}
+
+
 ::: {.spacer style="height:70%;"}
 Missing values
 
@@ -865,6 +914,8 @@ Best dealt with manually
 
 ## Unseen Levels
 
+![](assets/cat-theme/turso-03.svg){.absolute top=150 right=100 width="450" height="450"}
+
 <br>
 
 ::: {.spacer style="height:50%;"}
@@ -876,6 +927,8 @@ Will depend on [method]{.pink-text} and [models]{.pink-text}
 :::
 
 ## How to deal with Categorical variables
+
+![](assets/cat-theme/turso-04.svg){.absolute top=150 right=100 width="450" height="450"}
 
 <br>
 
@@ -889,6 +942,8 @@ Non-exhaustive list of methods
 - target encoding
 
 ## Label / Ordinal Encoding
+
+![](assets/cat-theme/turso-05.svg){.absolute top=150 right=100 width="450" height="450"}
 
 ::: {.spacer style="height:70%;"}
 
