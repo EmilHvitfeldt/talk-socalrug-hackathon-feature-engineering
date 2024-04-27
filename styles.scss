@@ -74,16 +74,20 @@ $presentation-font-size-root: 40px;
 }
 
 .pink-text {
-  color: $theme-pink;
+  color: darken($theme-pink, 10%);
+  font-weight: bold;
 }
 .brown-text {
-  color: $theme-brown;
+  color: darken($theme-brown, 10%);
+  font-weight: bold;
 }
 .blue-text {
-  color: $theme-blue;
+  color: darken($theme-blue, 10%);
+  font-weight: bold;
 }
 .purple-text {
-  color: $theme-purple;
+  color: darken($theme-purple, 10%);
+  font-weight: bold;
 }
 
 .pink-shadow {
@@ -246,8 +250,8 @@ $presentation-font-size-root: 40px;
   h5,
   p,
   pre {
-    padding-left: 45%;
-    width: 55%;
+    padding-left: 55%;
+    width: 45%;
   }
 }
 

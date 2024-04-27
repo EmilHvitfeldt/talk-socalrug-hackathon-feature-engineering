@@ -80,9 +80,11 @@ preprocessing vs feature engineering
 ::: {.columns}
 ::: {.column}
 
-Preprocessing
+### Preprocessing
 
-**what needs to happen**
+[what needs to happen]{.blue-text}
+
+<br>
 
 ::: fragment
 transformation
@@ -100,9 +102,11 @@ Encoding
 :::
 ::: {.column}
 
-Feature engineering
+### Feature engineering
 
-**what helps capture signal**
+[what helps capture signal]{.purple-text}
+
+<br>
 
 ::: fragment
 transformation
@@ -337,13 +341,13 @@ Distributional problems, scaling, outliers, non-linear effects ![](assets/cat-th
 
 ## Distributional problems
 
-::: {.spacer style="height:70%;"}
+::: {.spacer style="height:70%; text-align: right;"}
 
 Think about how models are working
 
 Very valid for count data
 
-We rarely care whether a predictor is normal
+We **rarely** care whether a predictor is normal
 
 :::
 
@@ -415,9 +419,10 @@ $$
 
 Think about how models are working
 
-- tree based models doesn't care, distance based models do
+- [tree based]{.text-pink} models doesn't care
+- [distance based]{.text-brown} models do
 
-has few downsides to doing
+has **few downsides** to doing
 
 will make interpretations slightly harder
 :::
@@ -507,7 +512,7 @@ $$
 
 <br>
 
-either to change magnitude of data, or its values
+either to change [magnitude]{.brown-text} of data, or its [range]{.purple-text}
 
 ## Scaling Methods
 
@@ -529,7 +534,7 @@ What are outliers?
 ::: fragment
 
 ::: r-fit-text
-values that are substantially different  
+values that are [substantially different]{.blue-text}  
 from the rest of the values
 :::
 
@@ -539,10 +544,10 @@ from the rest of the values
 
 <br>
 
-1. Identify them
+1. [Identify them]{.pink-text}
     a. expert knowledge
     b. (not recommended) thresholding
-2. Dealing with them
+2. [Dealing with them]{.blue-text}
     a. removal
     b. imputation
     c. indication
@@ -551,11 +556,11 @@ from the rest of the values
 
 ::: {.spacer style="height:70%;"}
 
-Doing a linear effect, we have that when the predictor increases in value, so does the outcome
+Doing a linear effect, we have that when the predictor [increases in value]{.brown-text}, the outcome [increases in value]{.brown-text}
 
 non-linear effects don't have this property
 
-depending on the type of model, having linear effects are nice
+[depending on the type of model]{.pink-text}, having linear effects are nice
 :::
 
 ## Non-linear example
@@ -676,19 +681,29 @@ and there are lots of methods to turn them into numeric ![](assets/cat-theme/pro
 
 ## Character vs Factor variables
 
+<br>
+
 ::: columns
 ::: {.column width="50%"}
-**Character**
+### Character
 
-Free form text
+<br>
+
+[Free form text]{.brown-text}
+
+<br>
 
 no restrictions
 :::
 
 ::: {.column width="50%"}
-**Factor**
+### Factor
 
-Know possible values
+<br>
+
+[Know possible values]{.purple-text}
+
+<br>
 
 A logical variables is conceptually a factor
 :::
@@ -738,7 +753,7 @@ adoptions |>
 :::
 :::
 
-## Character Examples
+## Character Examples - promary color
 
 ::: columns
 ::: {.column width="33%"}
@@ -769,6 +784,71 @@ adoptions |>
 :::
 :::
 
+## Character Examples - animal name
+
+```{r}
+pet_names <- adoptions |>
+  drop_na(animal_name) |>
+  mutate(animal_name = str_remove(animal_name, "\\*")) |>
+  filter(animal_id != animal_name) |>
+  filter(str_detect(animal_name, "\\d", negate = TRUE)) |>
+  filter(str_detect(animal_name, "^\\s*$", negate = TRUE)) |>
+  count(animal_name, sort = TRUE)
+```
+
+::: columns
+::: {.column width="33%"}
+```{r}
+pet_names |>
+  slice(1:20) |>
+  gt()
+```
+:::
+
+::: {.column width="33%"}
+```{r}
+pet_names |>
+  slice(21:40) |>
+  gt()
+```
+:::
+
+::: {.column width="33%"}
+```{r}
+pet_names |>
+  slice(41:60) |>
+  gt()
+```
+:::
+:::
+
+## Character Examples - animal name
+
+```{r}
+long_pet_names <- pet_names |>
+  filter(n == 1) |>
+  mutate(animal_name = str_remove_all(animal_name, "\\*")) |>
+  arrange(desc(nchar(animal_name)))
+```
+
+::: columns
+::: {.column width="50%"}
+```{r}
+long_pet_names |>
+  slice(1:10) |>
+  gt()
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+long_pet_names |>
+  slice(11:20) |>
+  gt()
+```
+:::
+:::
+
 ## Messy Characters
 
 ::: {.spacer style="height:70%;"}
@@ -789,15 +869,19 @@ Best dealt with manually
 
 ::: {.spacer style="height:50%;"}
 
-Only applicable for character variables
+Only applicable for [character variables]{.blue-text}
 
-Will depend on method and models
+Will depend on [method]{.pink-text} and [models]{.pink-text}
 
 :::
 
 ## How to deal with Categorical variables
 
+<br>
+
 Non-exhaustive list of methods
+
+<br>
 
 - label / ordinal encoding
 - dummy encoding
@@ -921,7 +1005,7 @@ also called mean encoding, likelihood encoding, or impact encoding
 
 <br>
 
-done by replacing each level of a categorical variable with the mean of the target variable within said level
+done by replacing each level of a categorical variable with the [mean of the target variable]{.pink-text} within said level
 
 <br>
 
