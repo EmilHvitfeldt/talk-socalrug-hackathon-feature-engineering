@@ -1,0 +1,290 @@
+/*-- scss:defaults --*/
+
+@import url('https://fonts.googleapis.com/css2?family=Fira+Sans+Extra+Condensed&family=Roboto:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+$theme-pink: #ECC0CF;
+$theme-brown: #DFD0C0;
+$theme-blue: #B5C7EB;
+$theme-purple: #D1BCDC;
+$theme-black: #000000;
+$theme-white: #FFFFFF;
+$theme-grey: #999999;
+$theme-grey-lite: #E0E0E0;
+
+$link-color: darken($theme-pink, 10%);
+
+$selection-bg: lighten($theme-pink, 10%);
+$selection-color: darken($theme-pink, 20%);
+
+$presentation-heading-font: 'Fira Sans Extra Condensed', sans-serif;
+$font-family-sans-serif: 'Roboto', sans-serif;
+
+$presentation-font-size-root: 40px;
+
+/*-- scss:rules --*/
+
+.spacer {
+  padding-top: 50px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.reveal .slides section {
+  .fragment.highlight-pink {
+    opacity: 1;
+    visibility: inherit
+  }
+  .fragment.highlight-brown {
+    opacity: 1;
+    visibility: inherit
+  }
+  .fragment.highlight-blue {
+    opacity: 1;
+    visibility: inherit
+  }
+  .fragment.highlight-purple {
+    opacity: 1;
+    visibility: inherit
+  }
+
+  .fragment.highlight-pink.visible {
+    background-color: lighten($theme-pink, 10%);
+  }
+  .fragment.highlight-blue.visible {
+    background-color: lighten($theme-blue, 10%);
+    color:$theme-black;
+  }
+  .fragment.highlight-brown.visible {
+    background-color: lighten($theme-brown, 10%);
+  }
+  .fragment.highlight-purple.visible {
+    background-color: lighten($theme-purple, 10%);
+  }}
+
+
+.gt_table_body {
+  white-space: nowrap;
+  font-size: 24px;
+}
+
+.gt_col_heading {
+  font-size: 28px !important;
+}
+
+.pink-text {
+  color: $theme-pink;
+}
+.brown-text {
+  color: $theme-brown;
+}
+.blue-text {
+  color: $theme-blue;
+}
+.purple-text {
+  color: $theme-purple;
+}
+
+.pink-shadow {
+  text-shadow: 5px 5px 0px $theme-pink,
+               10px 10px 0px lighten($theme-pink, 7.5%),
+               15px 15px 0px lighten($theme-pink, 15%);
+}
+.blue-shadow {
+  text-shadow: 5px 5px 0px $theme-blue,
+               10px 10px 0px lighten($theme-blue, 7.5%),
+               15px 15px 0px lighten($theme-blue, 15%);
+}
+.brown-shadow {
+  text-shadow: 5px 5px 0px $theme-brown,
+               10px 10px 0px lighten($theme-brown, 7.5%),
+               15px 15px 0px lighten($theme-brown, 15%);
+}
+.purple-shadow {
+  text-shadow: 5px 5px 0px $theme-purple,
+               10px 10px 0px lighten($theme-purple, 7.5%),
+               15px 15px 0px lighten($theme-purple, 15%);
+}
+
+.speech {
+  background-color: $theme-grey;
+  padding: 1em;
+  margin-bottom: 1em;
+  border-radius: 15px;
+  border-style: solid;
+  border-width: 5px;
+
+  img {
+    margin-bottom: -0.5em;
+    padding-right: 0.5em;
+    transform: scaleX(-1);
+  }
+
+  &.right {
+    text-align: right;
+
+
+    img {
+      padding-left: 0.5em;
+      transform: scaleX(1);
+    }
+  }
+
+  &.pink {
+    background-color: $theme-pink;
+    border-color: darken($theme-pink, 20%);
+  }
+  &.brown {
+    background-color: $theme-brown;
+    border-color: darken($theme-brown, 20%);
+  }
+  &.blue {
+    background-color: $theme-blue;
+    border-color: darken($theme-blue, 20%);
+
+  }
+  &.purple {
+    background-color: $theme-purple;
+    border-color: darken($theme-purple, 20%);
+  }
+}
+
+@mixin background-full {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.theme-title {
+  &:is(.slide-background) {
+    background-image: url('../../../../../assets/cat-theme/title.svg');
+    @include background-full;
+  }
+
+  h2 {
+    width: 55%;
+    text-align: left;
+    font-size: 150px;
+  }
+
+  h3 {
+    width: 55%;
+    color: $theme-grey;
+    text-align: left;
+    font-size: 70px;
+  }
+}
+
+.theme-section1 {
+  &:is(.slide-background) {
+    background-image: url('../../../../../assets/cat-theme/section-01.svg');
+    background-size: auto 80%, cover;
+    background-position: 90% 65%, center;
+    background-repeat: no-repeat;
+  }
+
+  h2,
+  h3,
+  h4,
+  h5,
+  p,
+  pre {
+    width: 65%;
+  }
+}
+
+.theme-section2 {
+  &:is(.slide-background) {
+    background-image: url('../../../../../assets/cat-theme/section-02.svg');
+    background-size: auto 60%, cover;
+    background-position: 50% 100%, center;
+    background-repeat: no-repeat;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  p,
+  pre {
+    text-align: center;
+  }
+}
+
+.theme-section3 {
+  &:is(.slide-background) {
+    background-image: url('../../../../../assets/cat-theme/section-03.svg');
+    background-size: auto 80%, cover;
+    background-position: 100% 65%, center;
+    background-repeat: no-repeat;
+  }
+
+  h2,
+  h3,
+  h4,
+  h5,
+  p,
+  pre {
+    width: 65%;
+  }
+}
+
+.theme-section4 {
+  &:is(.slide-background) {
+    background-image: url('../../../../../assets/cat-theme/section-04.svg');
+    background-size: auto 80%, cover;
+    background-position: 0% 65%, center;
+    background-repeat: no-repeat;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  p,
+  pre {
+    padding-left: 45%;
+    width: 55%;
+  }
+}
+
+.theme-section5 {
+  &:is(.slide-background) {
+    background-image: url('../../../../../assets/cat-theme/section-05.svg');
+    background-size: auto 80%, cover;
+    background-position: 100% 65%, center;
+    background-repeat: no-repeat;
+  }
+
+  h2,
+  h3,
+  h4,
+  h5,
+  p,
+  pre {
+    width: 65%;
+  }
+}
+
+.theme-section6 {
+  &:is(.slide-background) {
+    background-image: url('../../../../../assets/cat-theme/section-06.svg');
+    background-size: auto 80%, cover;
+    background-position: 0% 65%, center;
+    background-repeat: no-repeat;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  p,
+  pre {
+    padding-left: 40%;
+    width: 60%;
+  }
+}

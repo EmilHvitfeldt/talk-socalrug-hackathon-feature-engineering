@@ -1,0 +1,954 @@
+---
+format:
+  revealjs: 
+    theme: [default, styles.scss]
+    width: 1280
+    height: 720
+    include-after-body: 
+      - "all-the-js-code.html"
+echo: false
+code-line-numbers: false
+---
+
+## Feature Engineering {.theme-title .center}
+
+### SoCal RUG 2024 Hackathon
+
+Emil Hvitfeldt
+
+## What is Feature Engineering?
+
+::: fragment
+::: r-fit-text
+The act of modifying data  
+to allow for easy  
+[extraction of signal]{.pink-shadow} and  
+[elimination of noise]{.blue-shadow} 
+:::
+:::
+
+##
+
+::: {.speech .pink}
+![](assets/cat-theme/profile-01.svg) why do we use feature engineering?
+:::
+
+::: fragment
+::: {.speech .purple .right}
+most models can't handle non-numeric data ![](assets/cat-theme/profile-02.svg) 
+:::
+:::
+
+::: fragment
+::: {.speech .blue}
+![](assets/cat-theme/profile-03.svg) and we often have non-numeric data
+:::
+:::
+
+##
+
+::: {.speech .pink}
+![](assets/cat-theme/profile-01.svg) Are there other reason?
+:::
+
+::: fragment
+::: {.speech .brown .right}
+to deal with missing values ![](assets/cat-theme/profile-04.svg) 
+:::
+:::
+
+::: fragment
+::: {.speech .blue .right}
+and correlated features ![](assets/cat-theme/profile-05.svg)
+:::
+:::
+
+::: fragment
+::: {.speech .purple .right}
+or deal with scaling issues ![](assets/cat-theme/profile-06.svg)
+:::
+:::
+
+# {.theme-section2}
+
+::: {.r-fit-text style="transform: translateY(-15rem);"}
+preprocessing vs feature engineering 
+:::
+
+## 
+
+::: {.columns}
+::: {.column}
+
+Preprocessing
+
+**what needs to happen**
+
+::: fragment
+transformation
+
+Normalization
+
+Formatting
+
+Imputing
+
+Encoding
+:::
+
+
+:::
+::: {.column}
+
+Feature engineering
+
+**what helps capture signal**
+
+::: fragment
+transformation
+
+Normalization
+
+Formatting
+
+Imputing
+
+Encoding
+:::
+
+:::
+:::
+
+## Long Beach Animal Shelter Data
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(gt)
+
+adoptions <- read_csv("data/animal-shelter-intakes-and-outcomes.csv") |>
+  clean_names() |>
+  filter(animal_type == "CAT")
+
+adoptions |>
+  head(n = 10) |>
+  gt()
+```
+
+::: footer
+<https://data.longbeach.gov/explore/dataset/animal-shelter-intakes-and-outcomes>
+:::
+
+## Date Time
+
+How can we deal with this variable?
+
+::::: {.columns}
+
+::::: {.column width="20%"}
+```{r}
+adoptions |>
+  select(intake_date) |>
+  head(n = 10) |>
+  gt()
+```
+:::::
+
+::::: {.column width="80%"}
+::: r-stack
+
+::: {.fragment .fade-in-then-out}
+```{r}
+adoptions |>
+  select(intake_date) |>
+  transmute(intake_date_integer = as.integer(intake_date)) |>
+  head(n = 10) |>
+  gt()
+```
+:::
+
+::: {.fragment .fade-in-then-out}
+:::
+
+::: {.fragment .fade-in-then-out}
+```{r}
+adoptions |>
+  select(intake_date) |>
+  transmute(
+    intake_date_year = clock::get_year(intake_date),
+    intake_date_month = clock::get_month(intake_date),
+    intake_date_day = clock::get_day(intake_date)
+  ) |>
+  head(n = 10) |>
+  gt()
+```
+:::
+
+::: {.fragment .fade-in-then-out}
+:::
+
+::: {.fragment .fade-in-then-out}
+```{r}
+library(extrasteps)
+library(almanac)
+
+rules <- list(christmas = hol_christmas(), halloween = hol_halloween())
+
+recipe(~ intake_date, data = adoptions) |>
+  step_date_before(intake_date, rules = rules) |>
+  prep() |>
+  bake(NULL) |>
+  head(n = 10) |>
+  gt()
+```
+:::
+
+::: {.fragment .fade-in-then-out}
+```{r}
+library(extrasteps)
+library(almanac)
+
+rules <- list(christmas = hol_christmas(), halloween = hol_halloween())
+
+recipe(~ intake_date, data = adoptions) |>
+  step_date_before(intake_date, rules = rules, transform = "log") |>
+  prep() |>
+  bake(NULL) |>
+  head(n = 10) |>
+  gt()
+```
+:::
+
+:::
+:::::
+:::::
+
+## Multiple Categorical variables
+
+How can we deal with these variables?
+
+```{r}
+adoptions |>
+  select(primary_color, secondary_color) |>
+  head(n = 10) |>
+  gt()
+```
+
+## Multiple Categorical variables
+
+How can we deal with these variables? Create dummies
+
+```{r}
+adoptions |>
+  select(primary_color, secondary_color) |>
+  recipe() |>
+  step_unknown(secondary_color) |>
+  step_dummy(primary_color, secondary_color) |>
+  prep() |>
+  bake(NULL) |>
+  head(n = 10) |>
+  gt()
+```
+
+## Multiple Categorical variables
+
+How can we deal with these variables? othering of low counts
+
+```{r}
+adoptions |>
+  select(primary_color, secondary_color) |>
+  recipe() |>
+  step_unknown(secondary_color) |>
+  step_other(primary_color, secondary_color, threshold = 0.01, other = "OTHER") |>
+  step_dummy(primary_color, secondary_color) |>
+  prep() |>
+  bake(NULL) |>
+  head(n = 10) |>
+  gt()
+```
+
+## Multiple Categorical variables
+
+How can we deal with these variables? combined dummies
+
+```{r}
+adoptions |>
+  select(primary_color, secondary_color) |>
+  recipe() |>
+  step_unknown(secondary_color) |>
+  step_dummy_multi_choice(primary_color, secondary_color, threshold = 0.019, other = "OTHER", prefix = "color") |>
+  prep() |>
+  bake(NULL) |>
+  relocate(color_ORANGE, color_WHITE) |>
+  head(n = 10) |>
+  gt()
+```
+
+## What will we go over?
+
+::: {.columns}
+::: {.column}
+
+**Types of data**
+
+- [numeric]{.fragment .highlight-purple fragment-index=1}
+- [character]{.fragment .highlight-purple fragment-index=1}
+  - factors
+  - logical
+- Datetime
+- text
+- image
+- time series
+- ... and more
+
+:::
+::: {.column}
+
+**Data problems**
+
+- [missing data]{.fragment .highlight-blue fragment-index=2}
+- too many variables
+- correlated variables
+- [outliers]{.fragment .highlight-blue fragment-index=2}
+- imbalanced
+- ... and more
+:::
+:::
+
+# numeric variables {.theme-section3}
+
+##
+
+::: {.speech .pink}
+![](assets/cat-theme/profile-01.svg) Aren't we done? we have numeric variables
+:::
+
+::: fragment
+::: {.speech .blue .right}
+They might still need improvements ![](assets/cat-theme/profile-05.svg) 
+:::
+:::
+
+::: fragment
+::: {.speech .brown .right}
+Distributional problems, scaling, outliers, non-linear effects ![](assets/cat-theme/profile-03.svg) 
+:::
+:::
+
+## Distributional problems
+
+::: {.spacer style="height:70%;"}
+
+Think about how models are working
+
+Very valid for count data
+
+We rarely care whether a predictor is normal
+
+:::
+
+## A skewed distribution
+
+```{r}
+library(modeldata)
+
+ames |>
+  ggplot(aes(Lot_Area)) +
+  geom_histogram(fill = "#ECC0CF", color = prismatic::clr_darken("#ECC0CF", 0.1), bins = 100) +
+  theme_minimal() +
+  labs(x = NULL, y = NULL)
+```
+
+## A logged skewed distribution
+
+```{r}
+library(modeldata)
+
+ames |>
+  ggplot(aes(log(Lot_Area))) +
+  geom_histogram(fill = "#ECC0CF", color = prismatic::clr_darken("#ECC0CF", 0.1), bins = 100) +
+  theme_minimal() +
+  labs(x = NULL, y = NULL)
+```
+
+## A square rooted skewed distribution
+
+```{r}
+library(modeldata)
+
+ames |>
+  ggplot(aes(sqrt(Lot_Area))) +
+  geom_histogram(fill = "#ECC0CF", color = prismatic::clr_darken("#ECC0CF", 0.1), bins = 100) +
+  theme_minimal() +
+  labs(x = NULL, y = NULL)
+```
+
+## Methods to alter distributions
+
+::: columns
+::: {.column width="50%"}
+- Logarithms
+- Square Roots
+- [Box-Cox]{.fragment .highlight-blue fragment-index=1}
+- Yeo-Johnson
+:::
+
+::: {.column width="50%"}
+::: {.fragment fragment-index=1}
+using MLE to estimate a transformation parameter [$\lambda$]{.purple-color} in the following equation that would optimize the normality of $x^*$
+
+$$
+x^* = \left\{
+    \begin{array}{ll}
+      \dfrac{x^\lambda - 1}{\lambda \tilde{x}^{\lambda - 1}}, & \lambda \neq 0 \\
+      \tilde{x} \log x & \lambda = 0
+    \end{array}
+  \right.
+$$
+:::
+:::
+:::
+
+## Scaling issues
+
+::: {.spacer style="height:70%;"}
+
+Think about how models are working
+
+- tree based models doesn't care, distance based models do
+
+has few downsides to doing
+
+will make interpretations slightly harder
+:::
+
+## Motivated example
+
+```{r}
+set.seed(1234)
+two_groups <- bind_rows(
+  tibble(group = "A", x = rnorm(100, 0, 10), y = rnorm(100, 0, 1)),
+  tibble(group = "B", x = rnorm(100, 100, 10), y = rnorm(100, 10, 1))
+)
+
+two_groups |>
+  ggplot(aes(x, y, color = group)) +
+  geom_point() +
+  theme_minimal() +
+  labs(x = NULL, y = NULL) +
+  guides(color = "none") +
+  scale_color_manual(values = c("#DFD0C0", "#D1BCDC")) +
+  xlim(c(-35, 135)) +
+  ylim(c(-5, 15))
+```
+
+## Motivated example
+
+```{r}
+two_groups |>
+  ggplot(aes(x, y, color = group)) +
+  geom_point() +
+  theme_minimal() +
+  labs(x = NULL, y = NULL) +
+  guides(color = "none") +
+  scale_color_manual(values = c("#DFD0C0", "#D1BCDC", "#B5C7EB")) +
+  geom_point(data = tibble(group = "C", x = 45, y = 12), size = 4) +
+  xlim(c(-35, 135)) +
+  ylim(c(-5, 15))
+```
+
+## Motivated example
+
+```{r}
+grid <- expand_grid(y = seq(-5, 15, length.out = 200), x = seq(-35, 135, length.out = 200)) |>
+  mutate(distA = sqrt((x-0)^2 + (y-0)^2)) |>
+  mutate(distB = sqrt((x-100)^2 + (y-10)^2)) |>
+  mutate(group = if_else(distA < distB, "A", "B"))
+
+two_groups |>
+  ggplot(aes(x, y, color = group)) +
+  geom_point() +
+  theme_minimal() +
+  labs(x = NULL, y = NULL) +
+  guides(color = "none", fill = "none") +
+  scale_color_manual(values = c("#DFD0C0", "#D1BCDC", "#B5C7EB")) +
+  scale_fill_manual(values = c("#DFD0C0", "#D1BCDC", "#B5C7EB")) +
+  geom_raster(data = grid, aes(fill = group), alpha = 0.5) +
+  geom_point(data = tibble(group = "C", x = 45, y = 12), size = 4) +
+  xlim(c(-35, 135)) +
+  ylim(c(-5, 15))
+```
+
+## Motivated example
+
+```{r}
+two_groups |>
+  ggplot(aes(x, y, color = group)) +
+  geom_point() +
+  theme_minimal() +
+  labs(x = NULL, y = NULL) +
+  guides(color = "none") +
+  scale_color_manual(values = c("#DFD0C0", "#D1BCDC", "#B5C7EB")) +
+  geom_point(data = tibble(group = "C", x = 45, y = 12)) +
+  coord_fixed()
+```
+
+## Scaling Methods
+
+All scaling methods are **trained** on our data
+
+<br>
+
+All are a variation on
+
+$$
+X_{scaled} = \dfrac{X - a}{b}
+$$
+
+<br>
+
+either to change magnitude of data, or its values
+
+## Scaling Methods
+
+| Method        | Definition                                                               |
+|----------------|--------------------------------------------------------|
+| Max-Abs       | $X_{scaled} = \dfrac{X}{\text{max}(\text{abs}(X))}$                      |
+| Normalization | $X_{scaled} = \dfrac{X - \text{mean}(X)}{\text{sd}(X)}$                  |
+| Min-Max       | $X_{scaled} = \dfrac{X - \text{min}(X)}{\text{max}(X) - \text{min}(X)}$  |
+| Robust        | $X_{scaled} = \dfrac{X - \text{median}(X)}{\text{Q3}(X) - \text{Q1}(X)}$ |
+
+## Dealing with outliers
+
+<br>
+
+What are outliers?
+
+<br>
+
+::: fragment
+
+::: r-fit-text
+values that are substantially different  
+from the rest of the values
+:::
+
+:::
+
+## Dealing with outliers
+
+<br>
+
+1. Identify them
+    a. expert knowledge
+    b. (not recommended) thresholding
+2. Dealing with them
+    a. removal
+    b. imputation
+    c. indication
+
+## Non-linear effects
+
+::: {.spacer style="height:70%;"}
+
+Doing a linear effect, we have that when the predictor increases in value, so does the outcome
+
+non-linear effects don't have this property
+
+depending on the type of model, having linear effects are nice
+:::
+
+## Non-linear example
+
+```{r}
+set.seed(1234)
+data_toy <- tibble::tibble(
+  Predictor = rnorm(100) + 1:100
+) |>
+  dplyr::mutate(Outcome = sin(Predictor/25) + rnorm(100, sd = 0.1) + 10)
+```
+
+```{r}
+data_toy |>
+  ggplot(aes(Predictor, Outcome)) +
+  geom_point() +
+  theme_minimal() +
+  theme(axis.text = element_blank())
+```
+
+## Non-linear example - distance to maximum
+
+```{r}
+data_toy |>
+  mutate(Color = abs(Predictor - Predictor[max(Outcome) == Outcome])) |>
+  ggplot(aes(Predictor, Outcome, color = Color)) +
+  geom_point() +
+  theme_minimal() +
+  theme(axis.text = element_blank()) +
+  scale_color_gradient(
+    high = "#E0E0E0", 
+    low = prismatic::clr_darken("#B5C7EB") |> prismatic::clr_saturate()
+  ) +
+  guides(color = "none")
+  
+```
+
+## Non-linear example - splines
+
+```{r}
+rec_splines <- recipe(Outcome ~ Predictor, data = data_toy) |>
+  step_bs(Predictor, keep_original_cols = TRUE, degree = 7) |>
+  prep()
+
+data_splines <- rec_splines |>
+  bake(new_data = data_toy) |>
+  select(-Predictor_bs_7) |>
+  rename_all(\(x) {stringr::str_replace(x, "Predictor_bs_", "Spline Feature ")})
+
+data_splines |>
+  tidyr::pivot_longer(cols = -c(Outcome, Predictor)) |>
+  ggplot(aes(Predictor, Outcome, color = value)) +
+  geom_point() +
+  facet_wrap(~name) +
+  scale_color_gradient(
+    low = "#E0E0E0", 
+    high = prismatic::clr_darken("#B5C7EB") |> prismatic::clr_saturate()
+  ) +
+  theme_minimal() +
+  guides(color = "none") +
+  theme(axis.text = element_blank())
+```
+
+## Basis Spline Features
+
+```{r}
+data_splines |>
+  select(-Outcome) |>
+  tidyr::pivot_longer(cols = -Predictor) |>
+  ggplot(aes(Predictor, value)) +
+  geom_line() +
+  facet_wrap(~name) +
+  theme_minimal() +
+  theme(axis.text = element_blank())
+```
+
+## Monotone Spline Features
+
+```{r}
+rec_splines <- recipe(Outcome ~ Predictor, data = data_toy) |>
+  step_spline_monotone(Predictor, keep_original_cols = TRUE, degree = 7) |>
+  prep()
+
+data_splines <- rec_splines |>
+  bake(new_data = data_toy) |>
+  select(-c(Predictor_07:Predictor_10)) |>
+  rename_all(\(x) {stringr::str_replace(x, "Predictor_0", "Spline Feature ")})
+
+data_splines |>
+  select(-Outcome) |>
+  tidyr::pivot_longer(cols = -Predictor) |>
+  ggplot(aes(Predictor, value)) +
+  geom_line() +
+  facet_wrap(~name) +
+  theme_minimal() +
+  theme(axis.text = element_blank())
+```
+
+# Categorical Variables {.theme-section4}
+
+##
+
+::: {.speech .pink}
+![](assets/cat-theme/profile-01.svg) Dealing with categorical variables are easy right?
+:::
+
+::: fragment
+::: {.speech .blue .right}
+Yes and no, there are some unique strugglesto categoricals ![](assets/cat-theme/profile-02.svg) 
+:::
+:::
+
+::: fragment
+::: {.speech .brown .right}
+and there are lots of methods to turn them into numeric ![](assets/cat-theme/profile-04.svg) 
+:::
+:::
+
+## Character vs Factor variables
+
+::: columns
+::: {.column width="50%"}
+**Character**
+
+Free form text
+
+no restrictions
+:::
+
+::: {.column width="50%"}
+**Factor**
+
+Know possible values
+
+A logical variables is conceptually a factor
+:::
+:::
+
+## Factor Examples - sex
+
+::: columns
+::: {.column width="50%"}
+```{r}
+adoptions |>
+  count(sex) |>
+  gt()
+```
+:::
+
+::: {.column width="50%"}
+
+::: fragment
+Lot of information cramped in here
+
+We could have it split into `sex` and `spayed/neutered`
+:::
+
+:::
+:::
+
+## Factor Examples - intake_condition
+
+::: columns
+::: {.column width="50%"}
+```{r}
+adoptions |>
+  count(intake_condition) |>
+  slice(1:8) |>
+  gt()
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+adoptions |>
+  count(intake_condition) |>
+  slice(9:16) |>
+  gt()
+```
+:::
+:::
+
+## Character Examples
+
+::: columns
+::: {.column width="33%"}
+```{r}
+adoptions |>
+  count(primary_color) |>
+  slice(1:20) |>
+  gt()
+```
+:::
+
+::: {.column width="33%"}
+```{r}
+adoptions |>
+  count(primary_color) |>
+  slice(21:40) |>
+  gt()
+```
+:::
+
+::: {.column width="33%"}
+```{r}
+adoptions |>
+  count(primary_color) |>
+  slice(41:60) |>
+  gt()
+```
+:::
+:::
+
+## Messy Characters
+
+::: {.spacer style="height:70%;"}
+Missing values
+
+Inconsistent encoding
+
+Typos
+
+::: fragment
+Best dealt with manually
+:::
+:::
+
+## Unseen Levels
+
+<br>
+
+::: {.spacer style="height:50%;"}
+
+Only applicable for character variables
+
+Will depend on method and models
+
+:::
+
+## How to deal with Categorical variables
+
+Non-exhaustive list of methods
+
+- label / ordinal encoding
+- dummy encoding
+- frequency encoding
+- target encoding
+
+## Label / Ordinal Encoding
+
+::: {.spacer style="height:70%;"}
+
+You take the categorical variable
+
+Give each level a number
+
+Replace level with said number
+
+::: fragment
+This is unlikely to work well unless done with care
+:::
+:::
+
+## Label / Ordinal Encoding - Example
+
+```{r}
+adoptions |>
+  select(sex_before = sex, intake_type_before = intake_type) |>
+  mutate(sex_after = sex_before, intake_type_after = intake_type_before) |>
+  recipe() |>
+  step_integer(sex_after, intake_type_after) |>
+  prep() |>
+  bake(NULL) |>
+  slice(1:12) |>
+  gt()
+```
+
+## Dummy Encoding
+
+A variable is created for each possible level in categorical variables
+
+They take value 1 when they original variable takes the value, 0 otherwise
+
+::: fragment
+::: columns
+::: {.column width="50%"}
+**pros**
+
+- easy to use and interpret
+- Versatile
+- base on many other methods
+:::
+
+::: {.column width="50%"}
+**cons**
+
+- Needs clean levels
+- Can create many columns
+- Not likely most efficient representation
+
+:::
+:::
+:::
+
+## Dummy vs One-Hot Encoding
+
+The terms dummy encoding and one-hot encoding get thrown around interchangeably, but they do have different and distinct meanings. 
+
+<br>
+
+One-hot encoding returns k variables
+
+<br>
+
+Dummy Encoding returns k-1 variables
+
+<br>
+
+Dummy encoding is preferred to avoid redundant data
+
+## Dummy Encoding - Example
+
+```{r}
+adoptions |>
+  select(sex, intake_type) |>
+  recipe() |>
+  step_dummy(sex, intake_type) |>
+  prep() |>
+  bake(NULL) |>
+  slice(1:12) |>
+  gt()
+```
+
+## Frequency Encoding
+
+For each level calculate how often it appears
+
+<br>
+
+replace the level with that value
+
+<br>
+
+Can be raw count or percentage (doens't matter much)
+
+## Frequency Encoding - Example
+
+```{r}
+adoptions |>
+  select(sex_before = sex, intake_type_before = intake_type) |>
+  mutate(sex_after = sex_before, intake_type_after = intake_type_before) |>
+  recipe() |>
+  extrasteps::step_encoding_frequency(sex_after, intake_type_after) |>
+  prep() |>
+  bake(NULL) |>
+  slice(1:12) |>
+  gt()
+```
+
+## Target Encoding
+
+also called mean encoding, likelihood encoding, or impact encoding
+
+<br>
+
+done by replacing each level of a categorical variable with the mean of the target variable within said level
+
+<br>
+
+The target variable will typically be the outcome, but that is not necessarily a requirement.
+
+## Target Encoding - Example
+
+```{r}
+adoptions |>
+  select(sex_before = sex, intake_type_before = intake_type, outcome_type) |>
+  mutate(sex_after = sex_before, intake_type_after = intake_type_before) |>
+  recipe() |>
+  embed::step_lencode_glm(sex_after, intake_type_after, outcome = vars(outcome_type)) |>
+  prep() |>
+  bake(NULL) |>
+  slice(1:12) |>
+  gt()
+```
+
+# Want to learn more? {.theme-section5}
+
+My WIP Book: Feature Engineering A-Z
+
+<https://feaz-book.com/>
+
+Finished books by other people:
+
+- Python Feature Engineering Cookbook
+- Feature Engineering Bookcamp
+- Feature Engineering and Selection
